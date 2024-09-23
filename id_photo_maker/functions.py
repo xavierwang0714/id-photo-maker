@@ -109,8 +109,8 @@ def base64_to_image(base64_data, generate_path: str):
     file_name = f"{current_time}.jpg"
 
     try:
-        modified_path = generate_path.replace('/', '\\')
-        out_put_path = os.path.join(modified_path, file_name)
+        out_put_path = os.path.join(generate_path, file_name)
+        out_put_path = os.path.normpath(out_put_path)  # 标准化路径
         with open(out_put_path, "wb") as f:
             f.write(image_data)
         return out_put_path

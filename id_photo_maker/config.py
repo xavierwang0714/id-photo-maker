@@ -9,7 +9,7 @@ WATERMARK_PHOTO_FOLDER = 'generate/watermark'
 HUMAN_MATTING_FOLDER = 'generate/human_matting'
 
 # 定义请求路径
-BASIC_PATH = "http://127.0.0.1:8080"
+BASIC_PATH = "http://hivision_idphoto:8080"
 ID_PHOTO_PATH = BASIC_PATH + "/idphoto"
 ADD_BACKGROUND_COLOR_PATH = BASIC_PATH + "/add_background"
 LAYOUT_PHOTO_PATH = BASIC_PATH + "/generate_layout_photos"

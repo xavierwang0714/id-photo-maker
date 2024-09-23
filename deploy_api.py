@@ -110,6 +110,3 @@ def upload_file():
             return jsonify({'error': f'Unexpected error: {e}'}), 500
 
         return jsonify({'message': 'File uploaded successfully', 'imageData': response_json["image_base64"]}), 200
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)

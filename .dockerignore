@@ -1,0 +1,9 @@
+.venv/
+.gitignore
+.git/
+.idea/
+.vscode/
+__pycache__/
+*.log
+LICENSE
+*.md
