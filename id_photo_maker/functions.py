@@ -2,6 +2,7 @@
 
 import base64
 import os
+import pytz
 import requests
 from datetime import datetime
 from .config import (color_dict, ADD_BACKGROUND_COLOR_PATH, ID_PHOTO_PATH, LAYOUT_PHOTO_PATH, WATERMARK_PATH,
@@ -105,7 +106,9 @@ def base64_to_image(base64_data, generate_path: str):
         logger.error(f"Unexpected error: {e}")
         raise
 
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # 生成文件名
+    shanghai_tz = pytz.timezone("Asia/Shanghai")
+    current_time = datetime.now(shanghai_tz).strftime("%Y-%m-%d_%H-%M-%S")
     file_name = f"{current_time}.jpg"
 
     try:
@@ -120,6 +123,53 @@ def base64_to_image(base64_data, generate_path: str):
     except Exception as e:
         logger.error(f"Unexpected error: {e}")
         raise
+
+
+# 生成透明底的证件照
+def generate_id_photo(input_image_path: str):
+    # 参数检查
+    if not input_image_path:
+        logger.error("No input image path")
+        raise ValueError("No input image path")
+
+    # 设置参数
+    save_path = NONE_BACKGROUND_FOLDER
+    base64_in_response = "image_base64_hd"
+    server_path = ID_PHOTO_PATH
+    params = {
+        "head_measure_ratio": 0.2,
+        "head_height_ratio": 0.45,
+        "top_distance_max": 0.12,
+        "top_distance_min": 0.1,
+    }
+    files = {"input_image": open(input_image_path, "rb")}
+    data = {
+        "height": 413,
+        "width": 295,
+        "human_matting_model": "modnet_photographic_portrait_matting",
+        "face_detect_model": "mtcnn",
+        "hd": True,
+        "dpi": 300,
+        "face_alignment": True,
+    }
+
+    response_json = None
+    image_path = None
+    try:
+        response_json, image_path = send_request(server_path, files, data, base64_in_response, save_path, params)
+    except Exception as e:
+        logger.error(f"Error in send request: {e}")
+        raise
+
+    # 检查返回数据是否为空
+    if not response_json:
+        logger.error("No response JSON")
+        raise ValueError("No response JSON")
+    elif not image_path:
+        logger.error("No image path")
+        raise ValueError("No image path")
+
+    return response_json, image_path
 
 
 # 为图片添加背景颜色
@@ -148,53 +198,6 @@ def add_background_color(input_image_path: str, color: str):
     image_path = None
     try:
         response_json, image_path = send_request(server_path, files, data, base64_in_response, save_path)
-    except Exception as e:
-        logger.error(f"Error in send request: {e}")
-        raise
-
-    # 检查返回数据是否为空
-    if not response_json:
-        logger.error("No response JSON")
-        raise ValueError("No response JSON")
-    elif not image_path:
-        logger.error("No image path")
-        raise ValueError("No image path")
-
-    return response_json, image_path
-
-
-# 生成透明底的证件照
-def generate_id_photo(input_image_path: str):
-    # 参数检查
-    if not input_image_path:
-        logger.error("No input image path")
-        raise ValueError("No input image path")
-
-    # 设置参数
-    save_path = NONE_BACKGROUND_FOLDER
-    base64_in_response = "image_base64_standard"
-    server_path = ID_PHOTO_PATH
-    params = {
-        "head_measure_ratio": 0.2,
-        "head_height_ratio": 0.45,
-        "top_distance_max": 0.12,
-        "top_distance_min": 0.1,
-    }
-    files = {"input_image": open(input_image_path, "rb")}
-    data = {
-        "height": 413,
-        "width": 295,
-        "human_matting_model": "modnet_photographic_portrait_matting",
-        "face_detect_model": "mtcnn",
-        "hd": True,
-        "dpi": 300,
-        "face_alignment": True,
-    }
-
-    response_json = None
-    image_path = None
-    try:
-        response_json, image_path = send_request(server_path, files, data, base64_in_response, save_path, params)
     except Exception as e:
         logger.error(f"Error in send request: {e}")
         raise
