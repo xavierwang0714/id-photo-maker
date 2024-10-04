@@ -1,0 +1,21 @@
+version: "3.4"
+services:
+  texture_snap:
+    image: "texture_snap:latest"
+    container_name: texture_snap
+    restart: "unless-stopped"
+    ports:
+      - "8770:5000"
+    networks:
+      - idphoto
+  hivision_idphoto:
+    image: "linzeyi/hivision_idphotos:latest"
+    container_name: hivision_idphoto
+    ports:
+      - "8088:8080"
+    networks:
+      - idphoto
+
+networks:
+  idphoto:
+    driver: bridge

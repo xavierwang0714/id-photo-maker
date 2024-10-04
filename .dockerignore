@@ -8,3 +8,4 @@ __pycache__/
 LICENSE
 *.md
 *.bib
+docker-compose.yml
